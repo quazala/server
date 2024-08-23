@@ -1,17 +1,17 @@
 {
   "name": "@lecala/server",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Lecala server library",
   "type": "module",
   "files": [
     "dist"
   ],
-  "main": "./dist/main.umd.cjs",
-  "module": "./dist/main.js",
+  "main": "./dist/main.umd.js",
+  "module": "./dist/main.es.js",
   "exports": {
     ".": {
-      "import": "./dist/main.js",
-      "require": "./dist/main.umd.cjs"
+      "import": "./dist/main.es.js",
+      "require": "./dist/main.umd.js"
     }
   },
   "types": "./dist/main.d.ts",
@@ -40,7 +40,7 @@
     "vitest": "^1.0.0"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=16"
   },
   "packageManager": "pnpm@8.0.0",
   "publishConfig": {

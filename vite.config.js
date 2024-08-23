@@ -9,18 +9,13 @@ export default defineConfig({
       fileName: (format) => `main.${format}.js`,
     },
     rollupOptions: {
-      // If you have any external dependencies, list them here
-      // external: ['dependency-name'],
+      external: [],
       output: {
-        // And provide globals if necessary
-        // globals: {
-        //   'dependency-name': 'DependencyName',
-        // },
+        globals: {},
       },
     },
   },
   test: {
-    // Vitest configuration
     globals: true,
     environment: "node",
   },

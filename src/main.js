@@ -11,7 +11,6 @@ export function createServerConfig(options) {
     stop: () => console.log("Server would stop"),
   };
 }
-
 /**
  * Adds two numbers
  * @param {number} a - First number
