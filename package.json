@@ -1,7 +1,7 @@
 {
-  "name": "@lecala/server",
+  "name": "@arounder/server",
   "version": "0.0.1",
-  "description": "Lecala server library",
+  "description": "Arounder server library",
   "type": "module",
   "files": [
     "dist"
