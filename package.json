@@ -1,6 +1,6 @@
 {
   "name": "@lecala/server",
-  "version": "1.0.3",
+  "version": "0.0.1",
   "description": "Lecala server library",
   "type": "module",
   "files": [
