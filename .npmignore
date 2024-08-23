@@ -1,0 +1,5 @@
+src
+tsconfig.json
+.github
+vite.config.js
+.npmrc
