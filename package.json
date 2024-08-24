@@ -34,7 +34,9 @@
   },
   "homepage": "https://github.com/quazala/server#readme",
   "devDependencies": {
+    "@biomejs/biome": "1.8.3",
     "@types/node": "^20.16.1",
+    "lefthook": "^1.7.14",
     "typescript": "^5.5.4",
     "vite": "^5.4.2",
     "vitest": "^1.6.0"
