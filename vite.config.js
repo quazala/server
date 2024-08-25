@@ -1,11 +1,11 @@
-import { defineConfig } from "vite";
-import { resolve } from "path";
+import { resolve } from 'node:path';
+import { defineConfig } from 'vite';
 
 export default defineConfig({
   build: {
     lib: {
-      entry: resolve(__dirname, "src/main.js"),
-      name: "Quazala Server",
+      entry: resolve(__dirname, 'src/main.js'),
+      name: 'Quazala Server',
       fileName: (format) => `main.${format}.js`,
     },
     rollupOptions: {
@@ -17,6 +17,6 @@ export default defineConfig({
   },
   test: {
     globals: true,
-    environment: "node",
+    environment: 'node',
   },
 });

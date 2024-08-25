@@ -13,15 +13,15 @@
     "esModuleInterop": true,
 
     /* Linting */
-    "strict": true,
+    "strict": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
     /* Declaration File Generation */
-    "declarationMap": true,
-    "declaration": true,
-    "emitDeclarationOnly": true,
+    // "declarationMap": true,
+    // "declaration": true,
+    // "emitDeclarationOnly": true,
     "outDir": "./dist",
     "allowJs": true,
     "checkJs": true

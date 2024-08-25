@@ -3,9 +3,7 @@
   "version": "0.0.1",
   "description": "Quazala server library",
   "type": "module",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "main": "./dist/main.umd.js",
   "module": "./dist/main.es.js",
   "exports": {
@@ -20,7 +18,8 @@
     "build": "vite build && tsc --emitDeclarationOnly",
     "preview": "vite preview",
     "test": "vitest run",
-    "prepare": "pnpm run build"
+    "prepare": "pnpm run build",
+    "check": "pnpm biome check --write ./"
   },
   "repository": {
     "type": "git",

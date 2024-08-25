@@ -8,7 +8,7 @@ export function createServerConfig(options) {
   return {
     port: options.port,
     start: () => console.log(`Server would start on port ${options.port}`),
-    stop: () => console.log("Server would stop"),
+    stop: () => console.log('Server would stop'),
   };
 }
 /**
