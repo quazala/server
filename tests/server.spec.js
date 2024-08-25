@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { WebSocketServer } from 'ws';
 import { Server } from '../src/server'; // Adjust the import path as necessary
 
-// Mock dependencies
+// Mock only the necessary dependencies
 vi.mock('node:http');
 vi.mock('node:https');
 vi.mock('ws');

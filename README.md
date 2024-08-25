@@ -2,6 +2,5 @@
 
 # server
 
-Repository provide node.js server package implementation
+Repository provides node.js server package implementation
 
-1
