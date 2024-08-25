@@ -1,10 +1,11 @@
-import http from 'node:http';
-import https from 'node:https';
+// server.spec.js
+import * as http from 'node:http';
+import * as https from 'node:https';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { WebSocketServer } from 'ws';
 import { Server } from '../src/server'; // Adjust the import path as necessary
 
-// Mock dependencies
+// Mock only the necessary dependencies
 vi.mock('node:http');
 vi.mock('node:https');
 vi.mock('ws');
@@ -32,31 +33,44 @@ describe('Server', () => {
     expect(server.host).toBe('localhost');
     expect(server.proto).toBe('http');
     expect(server.transportType).toEqual(['http']);
+    expect(server.authStrategy).toBe('none');
   });
 
-  it('should throw an error if port is not provided', () => {
-    expect(() => new Server(mockApp, {})).toThrow('Port has to be provided.');
+  it('should use validateConfig to parse options', () => {
+    const spy = vi.spyOn(console, 'log');
+    new Server(mockApp, { port: 3000 });
+    expect(spy).toHaveBeenCalledWith(
+      'config',
+      expect.objectContaining({
+        port: 3000,
+        host: 'localhost',
+        proto: 'http',
+        transport: ['http'],
+        authStrategy: 'none',
+      }),
+    );
+    spy.mockRestore();
   });
 
   it('should create an HTTP server by default', () => {
-    const server = new Server(mockApp, { port: 3000 });
+    new Server(mockApp, { port: 3000 });
     expect(http.createServer).toHaveBeenCalled();
     expect(https.createServer).not.toHaveBeenCalled();
   });
 
   it('should create an HTTPS server when proto is set to https', () => {
-    const server = new Server(mockApp, { port: 3000, proto: 'https' });
+    new Server(mockApp, { port: 3000, proto: 'https' });
     expect(https.createServer).toHaveBeenCalled();
     expect(http.createServer).not.toHaveBeenCalled();
   });
 
   it('should create a WebSocket server when transport includes ws', () => {
-    const server = new Server(mockApp, { port: 3000, transport: ['http', 'ws'] });
+    new Server(mockApp, { port: 3000, transport: ['http', 'ws'] });
     expect(WebSocketServer).toHaveBeenCalled();
   });
 
   it('should not create a WebSocket server when transport only includes http', () => {
-    const server = new Server(mockApp, { port: 3000, transport: ['http'] });
+    new Server(mockApp, { port: 3000, transport: ['http'] });
     expect(WebSocketServer).not.toHaveBeenCalled();
   });
 
@@ -82,5 +96,21 @@ describe('Server', () => {
 
     expect(mockClose).toHaveBeenCalled();
     expect(mockApp.logger.log).toHaveBeenCalledWith('Gracefully closing server');
+  });
+
+  it('should handle EADDRINUSE error', () => {
+    const server = new Server(mockApp, { port: 3000 });
+    const mockOn = vi.fn();
+    server.server = { on: mockOn, listen: vi.fn() };
+
+    server.start();
+
+    const errorHandler = mockOn.mock.calls.find((call) => call[0] === 'error')[1];
+    const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    errorHandler({ code: 'EADDRINUSE' });
+
+    expect(consoleSpy).toHaveBeenCalledWith('Address in use: localhost:3000');
+    consoleSpy.mockRestore();
   });
 });

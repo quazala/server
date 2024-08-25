@@ -1,7 +1,8 @@
 import http from 'node:http';
 import https from 'node:https';
 import { WebSocketServer as WsServer } from 'ws';
-import { ServerClient } from './server-client';
+import { validateConfig } from './config/config.js';
+import { ServerClient } from './server-client.js';
 import { RStream } from './streams/rstream';
 import { HttpTransport } from './transports/http';
 import { WsTransport } from './transports/ws';
@@ -10,14 +11,17 @@ export class Server {
   constructor(app, opts) {
     this.app = app;
     this.logger = app.logger;
-    this.host = opts.host;
-    this.proto = opts.proto || 'http'; /* TODO: support https */
-    this.transportType = opts.transport || ['http']; // Supported values: 'http' | 'ws'
-    if (!opts.port) {
-      throw new Error('Port has to be provided.');
-    }
-    this.port = opts.port;
-    this.host = opts.host || 'localhost';
+
+    const config = validateConfig(opts);
+
+    console.log('config', config);
+    const { host, port, authStrategy, proto, transport } = config;
+    this.host = host;
+    this.proto = proto;
+    this.transportType = transport;
+    this.authStrategy = authStrategy;
+    this.port = port;
+
     this.wsServer = null;
     this.server = null;
     this.#prepare();
