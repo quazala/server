@@ -1,25 +1,18 @@
-
 export const headifyCorsOptions = (options) => {
-  const headers = {};
+  const allowOrigins = options.flatMap((option) => option.AllowOrigin).reduce((set, origin) => set.add(origin), new Set());
+  const allowMethods = options.flatMap((option) => option.AllowMethods).reduce((set, method) => set.add(method), new Set());
+  const allowHeaders = options.flatMap((option) => option.AllowHeaders).reduce((set, header) => set.add(header), new Set());
+  const exposeHeaders = options.flatMap((option) => option.ExposeHeaders).reduce((set, header) => set.add(header), new Set());
 
-  const allowOrigins = new Set();
-  const allowMethods = new Set();
-  const allowHeaders = new Set();
-  const exposeHeaders = new Set();
   const allowCredentials = options.allowCredentials;
   const maxAge = options.maxAge;
 
-  options.forEach((option) => {
-    option.AllowOrigin.forEach((origin) => allowOrigins.add(origin));
-    option.AllowMethods.forEach((method) => allowMethods.add(method));
-    option.AllowHeaders.forEach((header) => allowHeaders.add(header));
-    option.ExposeHeaders.forEach((header) => exposeHeaders.add(header));
-  });
-
-  headers['Access-Control-Allow-Origin'] = Array.from(allowOrigins).join(', ');
-  headers['Access-Control-Allow-Methods'] = Array.from(allowMethods).join(', ');
-  headers['Access-Control-Allow-Headers'] = Array.from(allowHeaders).join(', ');
-  headers['Access-Control-Expose-Headers'] = Array.from(exposeHeaders).join(', ');
+  const headers = {
+    'Access-Control-Allow-Origin': Array.from(allowOrigins).join(', '),
+    'Access-Control-Allow-Methods': Array.from(allowMethods).join(', '),
+    'Access-Control-Allow-Headers': Array.from(allowHeaders).join(', '),
+    'Access-Control-Expose-Headers': Array.from(exposeHeaders).join(', '),
+  };
 
   if (allowCredentials) {
     headers['Access-Control-Allow-Credentials'] = 'true';
