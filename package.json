@@ -4,12 +4,12 @@
   "description": "Quazala server library",
   "type": "module",
   "files": ["dist"],
-  "main": "./dist/main.umd.js",
+  "main": "./dist/main.cjs.js",
   "module": "./dist/main.es.js",
   "exports": {
     ".": {
       "import": "./dist/main.es.js",
-      "require": "./dist/main.umd.js"
+      "require": "./dist/main.cjs.js"
     }
   },
   "types": "./dist/main.d.ts",
