@@ -14,7 +14,6 @@ export class Server {
 
     const config = validateConfig(opts);
 
-    console.log('config', config);
     const { host, port, authStrategy, proto, transport } = config;
     this.host = host;
     this.proto = proto;
