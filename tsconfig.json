@@ -19,12 +19,12 @@
     "noFallthroughCasesInSwitch": true,
 
     /* Declaration File Generation */
-    // "declarationMap": true,
-    // "declaration": true,
-    // "emitDeclarationOnly": true,
+    "declarationMap": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
     "outDir": "./dist",
     "allowJs": true,
-    "checkJs": true
+    "checkJs": false
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]
