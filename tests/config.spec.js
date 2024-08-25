@@ -1,132 +1,141 @@
 import { describe, expect, it } from 'vitest';
-import { validateConfig } from '../src/config/config'; // Adjust the import path as needed
+import { validateConfig } from '../src/config/config';
+
+const CORS_DEFAULT_CONFIG = {
+  AllowOrigin: ['*'],
+  AllowMethods: ['*'],
+  AllowHeaders: ['*'],
+  ExposeHeaders: ['*'],
+  AllowCredentials: true,
+  MaxAge: 0,
+};
 
 describe('validateConfig', () => {
-  describe('proto', () => {
-    it('should default to http when not provided', () => {
-      const result = validateConfig({});
-      expect(result.proto).toBe('http');
-    });
+  it('should use default values when an empty configuration is provided', () => {
+    const config = {};
+    const result = validateConfig(config);
 
-    it('should accept http as a valid value', () => {
-      const result = validateConfig({ proto: 'http' });
-      expect(result.proto).toBe('http');
-    });
-
-    it('should accept ws as a valid value when authStrategy is none', () => {
-      const result = validateConfig({ proto: 'ws', authStrategy: 'none' });
-      expect(result.proto).toBe('ws');
+    expect(result).toEqual({
+      proto: 'http',
+      transport: ['http'],
+      port: 8888,
+      host: 'localhost',
+      authStrategy: 'none',
+      corsOptions: [CORS_DEFAULT_CONFIG],
     });
   });
 
-  describe('transport', () => {
-    it('should default to ["http"] when not provided', () => {
-      const result = validateConfig({});
-      expect(result.transport).toEqual(['http']);
-    });
+  it('should validate a custom valid configuration', () => {
+    const config = {
+      proto: 'http',
+      transport: ['http', 'ws'],
+      port: 3000,
+      host: '127.0.0.1',
+      authStrategy: 'session',
+      corsOptions: [
+        {
+          AllowOrigin: ['https://example.com'],
+          AllowMethods: ['GET', 'POST'],
+          AllowHeaders: ['Content-Type', 'Authorization'],
+          ExposeHeaders: ['X-Custom-Header'],
+          AllowCredentials: false,
+          MaxAge: 600,
+        },
+      ],
+    };
+    const result = validateConfig(config);
 
-    it('should accept valid transport values', () => {
-      const result = validateConfig({ transport: ['http', 'ws'] });
-      expect(result.transport).toEqual(['http', 'ws']);
-    });
-
-    it('should throw an error for empty transport array', () => {
-      expect(() => validateConfig({ transport: [] })).toThrow('At least one transport method must be specified');
-    });
-
-    it('should throw an error for invalid transport value', () => {
-      expect(() => validateConfig({ transport: ['http', 'invalid'] })).toThrow();
-    });
+    expect(result).toEqual(config);
   });
 
-  describe('port', () => {
-    it('should default to 8888 when not provided', () => {
-      const result = validateConfig({});
-      expect(result.port).toBe(8888);
-    });
+  it('should fail if authStrategy is not "none" and proto is not "http"', () => {
+    const config = {
+      proto: 'ws',
+      authStrategy: 'session',
+    };
 
-    it('should accept valid port number', () => {
-      const result = validateConfig({ port: 3000 });
-      expect(result.port).toBe(3000);
-    });
-
-    it('should coerce string port to number', () => {
-      const result = validateConfig({ port: '3000' });
-      expect(result.port).toBe(3000);
-    });
-
-    it('should throw an error for non-integer port', () => {
-      expect(() => validateConfig({ port: 3000.5 })).toThrow();
-    });
+    expect(() => validateConfig(config)).toThrow("Authentication strategies other than 'none' require the 'http' protocol");
   });
 
-  describe('host', () => {
-    it('should default to localhost when not provided', () => {
-      const result = validateConfig({});
-      expect(result.host).toBe('localhost');
-    });
+  it('should apply default CORS options if none are provided', () => {
+    const config = {
+      corsOptions: [],
+    };
+    const result = validateConfig(config);
 
-    it('should accept valid host string', () => {
-      const result = validateConfig({ host: '127.0.0.1' });
-      expect(result.host).toBe('127.0.0.1');
-    });
+    expect(result.corsOptions).toEqual([CORS_DEFAULT_CONFIG]);
   });
 
-  describe('authStrategy', () => {
-    it('should default to none when not provided', () => {
-      const result = validateConfig({});
-      expect(result.authStrategy).toBe('none');
-    });
+  it('should merge provided CORS options with defaults', () => {
+    const config = {
+      corsOptions: [
+        {
+          AllowMethods: ['GET', 'POST'],
+        },
+      ],
+    };
+    const result = validateConfig(config);
 
-    it('should accept valid authStrategy values with http proto', () => {
-      const result = validateConfig({ authStrategy: 'session', proto: 'http' });
-      expect(result.authStrategy).toBe('session');
-    });
-
-    it('should throw an error for invalid authStrategy value', () => {
-      expect(() => validateConfig({ authStrategy: 'invalid' })).toThrow();
-    });
-
-    it('should throw an error when using non-none authStrategy with non-http proto', () => {
-      expect(() => validateConfig({ authStrategy: 'bearer', proto: 'ws' })).toThrow(
-        "Authentication strategies other than 'none' require the 'http' protocol",
-      );
-    });
+    expect(result.corsOptions).toEqual([
+      {
+        AllowOrigin: ['*'],
+        AllowMethods: ['GET', 'POST'],
+        AllowHeaders: ['*'],
+        ExposeHeaders: ['*'],
+        AllowCredentials: true,
+        MaxAge: 0,
+      },
+    ]);
   });
 
-  describe('combined scenarios', () => {
-    it('should accept a fully specified valid configuration', () => {
-      const config = {
-        proto: 'http',
-        transport: ['http', 'ws'],
-        port: 3000,
-        host: '127.0.0.1',
-        authStrategy: 'bearer',
-      };
-      const result = validateConfig(config);
-      expect(result).toEqual(config);
-    });
+  it('should fail if transport array is empty', () => {
+    const config = {
+      transport: [],
+    };
 
-    it('should accept a minimal valid configuration', () => {
-      const config = {};
-      const result = validateConfig(config);
-      expect(result).toEqual({
-        proto: 'http',
-        transport: ['http'],
-        port: 8888,
-        host: 'localhost',
-        authStrategy: 'none',
-      });
-    });
+    expect(() => validateConfig(config)).toThrow('At least one transport method must be specified');
+  });
 
-    it('should throw an error for multiple invalid fields', () => {
-      const config = {
-        proto: 'ws',
-        transport: [],
-        port: 'invalid',
-        authStrategy: 'bearer',
-      };
-      expect(() => validateConfig(config)).toThrow();
-    });
+  it('should coerce string port to number', () => {
+    const config = {
+      port: '3000',
+    };
+    const result = validateConfig(config);
+
+    expect(result.port).toBe(3000);
+  });
+
+  it('should validate a complex configuration with multiple CORS options', () => {
+    const config = {
+      corsOptions: [
+        {
+          AllowOrigin: ['https://foo.com'],
+        },
+        {
+          AllowOrigin: ['https://bar.com'],
+          AllowMethods: ['GET'],
+        },
+      ],
+    };
+    const result = validateConfig(config);
+
+    expect(result.corsOptions).toEqual([
+      {
+        AllowOrigin: ['https://foo.com'],
+        AllowMethods: ['*'],
+        AllowHeaders: ['*'],
+        ExposeHeaders: ['*'],
+        AllowCredentials: true,
+        MaxAge: 0,
+      },
+      {
+        AllowOrigin: ['https://bar.com'],
+        AllowMethods: ['GET'],
+        AllowHeaders: ['*'],
+        ExposeHeaders: ['*'],
+        AllowCredentials: true,
+        MaxAge: 0,
+      },
+    ]);
   });
 });

@@ -2,10 +2,7 @@ import { Readable } from 'node:stream';
 import mime from 'mime';
 import { Transport } from './abstract';
 
-const DEFAULT_HEADERS = {};
-
 export class HttpTransport extends Transport {
-  /* TESTS - TBD */
   constructor(server, req, res) {
     super(server, req);
     this.res = res;
@@ -15,7 +12,7 @@ export class HttpTransport extends Transport {
   }
 
   write(data, httpCode = 200, ext = 'json', options = {}) {
-    const { res } = this;
+    const { res, corsOptions } = this;
     if (res.writableEnded) {
       return;
     }
@@ -25,7 +22,7 @@ export class HttpTransport extends Transport {
       const fileType = mime.getType(ext);
       if (fileType) mimeType = fileType;
     }
-    const headers = { ...DEFAULT_HEADERS, 'Content-Type': mimeType };
+    const headers = { ...corsOptions, 'Content-Type': mimeType };
     if (httpCode === 206) {
       const { start, end, size = '*' } = options;
       headers['Content-Range'] = `bytes ${start}-${end}/${size}`;
