@@ -4,5 +4,7 @@ export function getIpFromReq(req) {
     const ips = xForwardedFor.split(',').map((ip) => ip.trim());
     return ips[0];
   }
-  return req?.connection?.remoteAddress || req?.socket?.remoteAddress;
+  return req?.connection?.remoteAddress
+    || req?.socket?.remoteAddress
+    || 'IP NOT FOUND';
 }
