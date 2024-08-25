@@ -1,6 +1,8 @@
+import { Readable } from 'node:stream';
+import mime from 'mime';
 import { Transport } from './abstract';
 
-const HEADERS = {};
+const DEFAULT_HEADERS = {};
 
 export class HttpTransport extends Transport {
   /* TESTS - TBD */
@@ -13,7 +15,31 @@ export class HttpTransport extends Transport {
   }
 
   write(data, httpCode = 200, ext = 'json', options = {}) {
-    // ...
+    const { res } = this;
+    if (res.writableEnded) {
+      return;
+    }
+    const streaming = data instanceof Readable;
+    let mimeType = mime.getType('html');
+    if (httpCode === 200) {
+      const fileType = mime.getType(ext);
+      if (fileType) mimeType = fileType;
+    }
+    const headers = { ...DEFAULT_HEADERS, 'Content-Type': mimeType };
+    if (httpCode === 206) {
+      const { start, end, size = '*' } = options;
+      headers['Content-Range'] = `bytes ${start}-${end}/${size}`;
+      headers['Accept-Ranges'] = 'bytes';
+      headers['Content-Length'] = end - start + 1;
+    }
+    if (streaming) {
+      res.writeHead(httpCode, headers);
+      return void data.pipe(res);
+    }
+    const buf = Buffer.isBuffer(data) ? data : Buffer.from(data);
+    headers['Content-Length'] = buf.length;
+    res.writeHead(httpCode, headers);
+    res.end(data);
   }
 
   getSession() {
@@ -32,7 +58,7 @@ export class HttpTransport extends Transport {
   redirect() {
     const { res } = this;
     if (res.headersSent) return;
-    res.writeHead(302, { Location: location, ...HEADERS });
+    res.writeHead(302, { Location: location, ...DEFAULT_HEADERS });
     res.end();
   }
 }
