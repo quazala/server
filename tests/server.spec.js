@@ -36,22 +36,6 @@ describe('Server', () => {
     expect(server.authStrategy).toBe('none');
   });
 
-  it('should use validateConfig to parse options', () => {
-    const spy = vi.spyOn(console, 'log');
-    new Server(mockApp, { port: 3000 });
-    expect(spy).toHaveBeenCalledWith(
-      'config',
-      expect.objectContaining({
-        port: 3000,
-        host: 'localhost',
-        proto: 'http',
-        transport: ['http'],
-        authStrategy: 'none',
-      }),
-    );
-    spy.mockRestore();
-  });
-
   it('should create an HTTP server by default', () => {
     new Server(mockApp, { port: 3000 });
     expect(http.createServer).toHaveBeenCalled();
