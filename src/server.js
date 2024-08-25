@@ -13,14 +13,14 @@ export class Server {
     this.host = opts.host;
     this.proto = opts.proto || 'http'; /* TODO: support https */
     this.transportType = opts.transport || ['http']; // Supported values: 'http' | 'ws'
-    if (!this.port) {
+    if (!opts.port) {
       throw new Error('Port has to be provided.');
     }
     this.port = opts.port;
     this.host = opts.host || 'localhost';
     this.wsServer = null;
     this.server = null;
-    this.this.#prepare();
+    this.#prepare();
   }
 
   #createServer() {
