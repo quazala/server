@@ -1,6 +1,6 @@
 {
   "name": "@quazala/server",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Quazala server library",
   "type": "module",
   "files": ["dist"],
