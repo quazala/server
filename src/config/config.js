@@ -15,7 +15,7 @@ const corsObjectSchema = z.object({
   AllowHeaders: z.array(z.string()).default(corsDefaultConfig.AllowHeaders),
   ExposeHeaders: z.array(z.string()).default(corsDefaultConfig.ExposeHeaders),
   AllowCredentials: z.boolean().default(corsDefaultConfig.AllowCredentials),
-  MaxAge: z.number().default(corsDefaultConfig.MaxAge),
+  MaxAge: z.number().min(0).optional().default(corsDefaultConfig.MaxAge),
 });
 
 const configSchema = z
@@ -26,8 +26,8 @@ const configSchema = z
       .optional()
       .default(['http'])
       .refine((arr) => arr.length > 0, { message: 'At least one transport method must be specified' }),
-    port: z.coerce.number().int().optional().default(8888),
-    host: z.string().optional().default('localhost'),
+    port: z.coerce.number().int().min(1).max(65535).optional().default(8888),
+    host: z.string().min(4).optional().default('localhost'),
     authStrategy: z.enum(['none', 'session', 'bearer']).optional().default('none'),
     corsOptions: z
       .array(corsObjectSchema)

@@ -1,4 +1,3 @@
-// server-client.spec.js
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ServerClient } from '../src/server-client';
 

@@ -8,8 +8,8 @@ describe('WsTransport', () => {
   let wsTransport;
 
   beforeEach(() => {
-    server = {}; // Mock server object
-    req = {}; // Mock request object
+    server = {};
+    req = {};
     connection = {
       on: vi.fn(),
       send: vi.fn(),
@@ -26,10 +26,10 @@ describe('WsTransport', () => {
   });
 
   it('should emit "close" event when the connection is closed', () => {
-    const closeCallback = connection.on.mock.calls[0][1]; // Retrieve the callback passed to `connection.on`
+    const closeCallback = connection.on.mock.calls[0][1];
     const emitSpy = vi.spyOn(wsTransport, 'emit');
 
-    closeCallback(); // Simulate the connection closing
+    closeCallback();
 
     expect(emitSpy).toHaveBeenCalledWith('close');
   });

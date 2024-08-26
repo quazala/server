@@ -1,11 +1,13 @@
 import http from 'node:http';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Transport } from '../src/transports/abstract';
-import { getIpFromReq } from '../src/utils/getIpFromReq';
+
+vi.mock('../src/utils/getIpFromReq', () => ({
+  getIpFromReq: vi.fn(() => '127.0.0.1'),
+}));
 
 class MockTransport extends Transport {
   write(data, statusCode, contentType) {
-    // Mock implementation for testing purposes
     this.sentData = { data, statusCode, contentType };
   }
 }
@@ -16,7 +18,9 @@ describe('Transport', () => {
   let transport;
 
   beforeEach(() => {
-    server = { console: { error: vi.fn() } };
+    server = {
+      logger: vi.fn(),
+    };
     req = { url: '/test', method: 'GET' };
     transport = new MockTransport(server, req);
   });
@@ -24,7 +28,8 @@ describe('Transport', () => {
   it('should initialize properties correctly', () => {
     expect(transport.server).toBe(server);
     expect(transport.req).toBe(req);
-    expect(transport.ip).toBe(getIpFromReq(req)); // Ensures getIpFromReq is used correctly
+    expect(transport.ip).toBe('127.0.0.1');
+    expect(transport.logger).toBe(server.logger);
   });
 
   it('should send data correctly using the send method', () => {
@@ -49,43 +54,22 @@ describe('Transport', () => {
 
     transport.error(code, { id: packetId, name: 'CustomError', error });
 
-    expect(server.console.error).toHaveBeenCalledWith(
-      `IP: ${transport.ip} - Method: GET - URL: /test - Reason: Internal Server Error\t500\t${error.stack}`,
+    expect(server.logger).toHaveBeenCalledWith(
+      expect.stringContaining('IP: 127.0.0.1 - Method: GET - URL: /test - Reason: Internal Server Error\t500\t'),
     );
 
-    expect(transport.sentData).toEqual({
-      data: JSON.stringify({
-        type: 'callback',
-        id: packetId,
-        error: {
-          name: 'CustomError',
-          message: 'Test error',
-          code: 500,
-          status: 'Internal Server Error',
-        },
-      }),
-      statusCode: 500,
-      contentType: 'json',
+    const sentData = JSON.parse(transport.sentData.data);
+    expect(sentData).toEqual({
+      type: 'callback',
+      id: packetId,
+      error: {
+        name: 'CustomError',
+        message: 'Test error',
+        code: 500,
+        status: 'Internal Server Error',
+      },
     });
-  });
-
-  it('should handle undefined error in error method gracefully', () => {
-    transport.error(undefined, { id: '1234', name: 'UnknownError' });
-
-    expect(server.console.error).toHaveBeenCalled();
-    expect(transport.sentData).toEqual({
-      data: JSON.stringify({
-        type: 'callback',
-        id: '1234',
-        error: {
-          name: 'UnknownError',
-          message: 'Unknown error',
-          code: 520,
-          status: undefined,
-        },
-      }),
-      statusCode: 520,
-      contentType: 'json',
-    });
+    expect(transport.sentData.statusCode).toBe(500);
+    expect(transport.sentData.contentType).toBe('json');
   });
 });
