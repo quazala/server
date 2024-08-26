@@ -12,6 +12,7 @@ export class HttpTransport extends Transport {
   }
 
   write(data, httpCode = 200, ext = 'json', options = {}) {
+    /* todo jsom method */
     const { res, corsOptions } = this;
     if (res.writableEnded) {
       return;
