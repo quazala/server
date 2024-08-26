@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      mime:
+        specifier: ^4.0.4
+        version: 4.0.4
       ws:
         specifier: ^8.18.0
         version: 8.18.0
@@ -493,6 +496,11 @@ packages:
 
   merge-stream@2.0.0:
     resolution: {integrity: sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==}
+
+  mime@4.0.4:
+    resolution: {integrity: sha512-v8yqInVjhXyqP6+Kw4fV3ZzeMRqEW6FotRsKXjRS5VMTNIuXsdRoAvklpoRgSqXm6o9VNH4/C0mgedko9DdLsQ==}
+    engines: {node: '>=16'}
+    hasBin: true
 
   mimic-fn@4.0.0:
     resolution: {integrity: sha512-vqiC06CuhBTUdZH+RYl8sFrL096vA45Ok5ISO6sE/Mr1jRbGH4Csnhi8f3wKVl7x8mO4Au7Ir9D3Oyv1VYMFJw==}
@@ -1060,6 +1068,8 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.0
 
   merge-stream@2.0.0: {}
+
+  mime@4.0.4: {}
 
   mimic-fn@4.0.0: {}
 

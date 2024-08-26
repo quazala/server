@@ -6,23 +6,24 @@ import { ServerClient } from './server-client.js';
 import { RStream } from './streams/rstream';
 import { HttpTransport } from './transports/http';
 import { WsTransport } from './transports/ws';
+import { headifyCorsOptions } from './utils/headifyCorsOptions.js';
 
 export class Server {
   constructor(app, opts) {
+    const config = validateConfig(opts);
+    const { host, port, authStrategy, proto, transport, corsOptions } = config;
+
     this.app = app;
     this.logger = app.logger;
-
-    const config = validateConfig(opts);
-
-    const { host, port, authStrategy, proto, transport } = config;
     this.host = host;
     this.proto = proto;
     this.transportType = transport;
     this.authStrategy = authStrategy;
     this.port = port;
-
+    this.corsOptions = headifyCorsOptions(corsOptions);
     this.wsServer = null;
     this.server = null;
+
     this.#prepare();
   }
 

@@ -1,5 +1,23 @@
 import z from 'zod';
 
+export const corsDefaultConfig = {
+  AllowOrigin: ['*'],
+  AllowMethods: ['*'],
+  AllowHeaders: ['*'],
+  ExposeHeaders: ['*'],
+  AllowCredentials: true,
+  MaxAge: 0,
+};
+
+const corsObjectSchema = z.object({
+  AllowOrigin: z.array(z.string()).default(corsDefaultConfig.AllowOrigin),
+  AllowMethods: z.array(z.enum(['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'PATCH', '*'])).default(corsDefaultConfig.AllowMethods),
+  AllowHeaders: z.array(z.string()).default(corsDefaultConfig.AllowHeaders),
+  ExposeHeaders: z.array(z.string()).default(corsDefaultConfig.ExposeHeaders),
+  AllowCredentials: z.boolean().default(corsDefaultConfig.AllowCredentials),
+  MaxAge: z.number().default(corsDefaultConfig.MaxAge),
+});
+
 const configSchema = z
   .object({
     proto: z.enum(['http', 'ws', 'https']).optional().default('http'),
@@ -11,6 +29,15 @@ const configSchema = z
     port: z.coerce.number().int().optional().default(8888),
     host: z.string().optional().default('localhost'),
     authStrategy: z.enum(['none', 'session', 'bearer']).optional().default('none'),
+    corsOptions: z
+      .array(corsObjectSchema)
+      .default([corsDefaultConfig])
+      .transform((arr) => {
+        if (arr.length === 0 || Object.keys(arr[0]).length === 0) {
+          return [corsDefaultConfig];
+        }
+        return arr.map((obj) => ({ ...corsDefaultConfig, ...obj }));
+      }),
   })
   .refine(
     (data) => {

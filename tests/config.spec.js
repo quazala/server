@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { validateConfig } from '../src/config/config'; // Adjust the import path as needed
+import { validateConfig } from '../src/config/config';
 
 describe('validateConfig', () => {
   describe('proto', () => {
