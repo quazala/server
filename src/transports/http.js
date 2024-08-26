@@ -11,8 +11,14 @@ export class HttpTransport extends Transport {
     });
   }
 
+  json(data, httpCode = 200, options = {}) {
+    const { res, corsOptions } = this;
+    const headers = Object.assign({ 'Content-Type': mime.getType('json') }, corsOptions);
+    res.writeHead(httpCode, headers);
+    res.end(data);
+  }
+
   write(data, httpCode = 200, ext = 'json', options = {}) {
-    /* todo jsom method */
     const { res, corsOptions } = this;
     if (res.writableEnded) {
       return;
@@ -23,7 +29,7 @@ export class HttpTransport extends Transport {
       const fileType = mime.getType(ext);
       if (fileType) mimeType = fileType;
     }
-    const headers = { ...corsOptions, 'Content-Type': mimeType };
+    const headers = Object.assign({ 'Content-Type': mimeType }, corsOptions);
     if (httpCode === 206) {
       const { start, end, size = '*' } = options;
       headers['Content-Range'] = `bytes ${start}-${end}/${size}`;
@@ -41,11 +47,11 @@ export class HttpTransport extends Transport {
   }
 
   getSession() {
-    /* TBD */
+    throw new Error(501);
   }
 
   setSession() {
-    /* TBD */
+    throw new Error(501);
   }
 
   close() {

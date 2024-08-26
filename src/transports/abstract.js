@@ -6,6 +6,7 @@ export class Transport extends EventEmitter {
   constructor(server, req) {
     super();
     this.server = server;
+    this.logger = server.logger;
     this.req = req;
     this.ip = getIpFromReq(req);
   }
@@ -23,7 +24,7 @@ export class Transport extends EventEmitter {
     const status = http.STATUS_CODES[preparedCode];
     const message = error ? error.message : status || 'Unknown error';
     const reason = `${status}\t${preparedCode}\t${error ? error.stack : 'Unknown stack'}`;
-    console.error(`IP: ${ip} - Method: ${method} - URL: ${url} - Reason: ${reason}`);
+    this.logger(`IP: ${ip} - Method: ${method} - URL: ${url} - Reason: ${reason}`);
     const packet = { type: 'callback', id, error: { name, message, code: preparedCode, status } };
     this.send(packet, preparedCode);
   }
