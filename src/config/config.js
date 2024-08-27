@@ -20,6 +20,7 @@ const corsObjectSchema = z.object({
 
 const configSchema = z
   .object({
+    apiType: z.enum(['rest', 'events', 'rpc']).optional().default('rest'),
     proto: z.enum(['http', 'ws', 'https']).optional().default('http'),
     transport: z
       .array(z.enum(['http', 'ws']))

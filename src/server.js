@@ -12,7 +12,7 @@ export class Server {
   constructor(app, opts) {
     const config = validateConfig(opts);
     const { host, port, authStrategy, proto, transport, corsOptions } = config;
-
+    this.apiType = config.apiType;
     this.app = app;
     this.logger = app.logger;
     this.host = host;
@@ -50,7 +50,31 @@ export class Server {
     }
   }
 
-  process(client, data) {}
+  #event(client, data) {
+    const { event } = data;
+  }
+
+  #rest(client, data) {
+    const { route } = data;
+  }
+
+  #rpc(client, data) {
+    const { method } = data;
+  }
+
+  process(client, data) {
+    const json = JSON.stringify(data);
+    if (this.apiType === 'events') {
+      return this.#event(client, json);
+    }
+    if (this.apiType === 'rest') {
+      return this.#rest(client, json);
+    }
+
+    if (this.apiType === 'rpc') {
+      return this.#rpc(client, json);
+    }
+  }
 
   #prepare() {
     this.#createServer();
