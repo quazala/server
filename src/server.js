@@ -24,6 +24,8 @@ export class Server {
     this.wsServer = null;
     this.server = null;
 
+    this.handlers = app.handlers;
+
     this.#prepare();
   }
 
@@ -33,7 +35,9 @@ export class Server {
     this.server = serverConstructor(async (req, res) => {
       const transport = new HttpTransport(this, req, res);
       const client = new ServerClient(transport);
+      console.log('req', req);
       const data = new RStream(req);
+      // console.log('data', await data.readAll());
       this.process(client, await data.readAll());
     });
   }
@@ -50,16 +54,19 @@ export class Server {
     }
   }
 
-  #event(client, data) {
-    const { event } = data;
+  #event(client, packet) {
+    const { event } = packet;
+    const handler = this.handlers[event];
   }
 
-  #rest(client, data) {
-    const { route } = data;
+  #rest(client, packet) {
+    const { route } = packet;
+    const handler = this.handlers[event];
   }
 
-  #rpc(client, data) {
-    const { method } = data;
+  #rpc(client, packet) {
+    const { method } = packet;
+    const handler = this.handlers[event];
   }
 
   process(client, data) {
