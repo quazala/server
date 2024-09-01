@@ -1,6 +1,6 @@
 {
   "name": "@quazala/server",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Quazala server library",
   "type": "module",
   "files": ["dist"],
@@ -17,7 +17,7 @@
     "dev": "vite",
     "build": "vite build && tsc --emitDeclarationOnly",
     "preview": "vite preview",
-    "test": "vitest run",
+    "test": "vitest run --pool=forks",
     "prepare": "pnpm run build",
     "check": "pnpm biome check --write ./"
   },

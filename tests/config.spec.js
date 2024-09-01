@@ -180,6 +180,7 @@ describe('validateConfig', () => {
   describe('combined scenarios', () => {
     it('should accept a fully specified valid configuration', () => {
       const config = {
+        apiType: 'rest',
         proto: 'http',
         transport: ['http', 'ws'],
         port: 3000,

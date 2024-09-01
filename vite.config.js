@@ -17,11 +17,16 @@ export default defineConfig({
         },
       },
     },
-    target: 'node16',
+    target: 'node18',
     minify: false,
   },
   test: {
     globals: true,
     environment: 'node',
+    poolOptions: {
+      forks: {
+        singleFork: true,
+      },
+    },
   },
 });
