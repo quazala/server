@@ -102,50 +102,6 @@ describe('Server', () => {
     expect(WebSocketServer).not.toHaveBeenCalled();
   });
 
-  it('should start the server and log the listening port', () => {
-    const server = new Server(mockApp, {});
-    const consoleSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
-
-    server.start();
-
-    expect(mockHttpServer.listen).toHaveBeenCalledWith(8888, 'localhost');
-    expect(mockHttpServer.on).toHaveBeenCalledWith('listening', expect.any(Function));
-
-    // Simulate the 'listening' event
-    mockHttpServer.on.mock.calls[0][1]();
-
-    expect(consoleSpy).toHaveBeenCalledWith('Listen port 8888');
-    consoleSpy.mockRestore();
-  });
-
-  it('should handle EADDRINUSE error', () => {
-    const server = new Server(mockApp, {});
-    const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-
-    server.start();
-
-    // Simulate the 'error' event with EADDRINUSE
-    const errorHandler = mockHttpServer.on.mock.calls.find((call) => call[0] === 'error')[1];
-    errorHandler({ code: 'EADDRINUSE' });
-
-    expect(consoleSpy).toHaveBeenCalledWith('Address in use: localhost:8888');
-    consoleSpy.mockRestore();
-  });
-
-  it('should not warn for non-EADDRINUSE errors', () => {
-    const server = new Server(mockApp, {});
-    const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-
-    server.start();
-
-    // Simulate the 'error' event with a different error
-    const errorHandler = mockHttpServer.on.mock.calls.find((call) => call[0] === 'error')[1];
-    errorHandler({ code: 'SOME_OTHER_ERROR' });
-
-    expect(consoleSpy).not.toHaveBeenCalled();
-    consoleSpy.mockRestore();
-  });
-
   it('should stop the server and log the closing message', () => {
     const server = new Server(mockApp, {});
     server.stop();

@@ -15,7 +15,7 @@ const corsObjectSchema = z.object({
     .default(corsDefaultConfig.AllowOrigin)
     .transform((arr) => Array.from(new Set(arr))),
   AllowMethods: z
-    .array(z.enum(['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'PATCH', '*']))
+    .array(z.enum(['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', '*']))
     .default(corsDefaultConfig.AllowMethods)
     .transform((arr) => Array.from(new Set(arr))),
   AllowHeaders: z
